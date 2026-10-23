@@ -158,8 +158,6 @@ dl.sheet dd { margin: 0; }
 .play:hover { text-decoration: underline; }
 .empty { color: var(--mute); }
 
-.jam-note { display: flex; gap: 14px; align-items: center; border: 1px solid var(--line); background: var(--card); padding: 14px 18px; }
-.jam-note .tape { width: 40px; flex: none; height: 28px; }
 
 /* Pôles */
 .poles { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
@@ -196,8 +194,13 @@ dl.sheet dd { margin: 0; }
 .edu .in { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px; padding: 28px 24px; }
 .edu-year { font: 900 clamp(48px, 8vw, 88px)/.8 var(--f-display); color: transparent; -webkit-text-stroke: 1.5px var(--acc); }
 .edu h3 { font-size: clamp(20px, 2.6vw, 30px); font-weight: 900; }
-.jam-note b { font-weight: 600; }
 .card-body { min-width: 0; }
+.ai-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.ai-card { background: var(--card); padding: 22px 20px 24px; display: grid; gap: 12px; align-content: start; }
+.ai-card h3 { font-size: 17px; }
+.ai-card p { color: #C9C6BF; font-size: 15px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips span { font: 600 10px var(--f-mono); font-stretch: 75%; letter-spacing: .08em; text-transform: uppercase; padding: 4px 8px; background: var(--bg); color: var(--fg); border: 1px solid var(--line); }
 .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
 .stats > div { background: var(--bg); padding: 10px 12px; display: grid; gap: 4px; }
 .stats .n { font: 900 20px/1 var(--f-display); color: var(--acc); font-variant-numeric: tabular-nums; }
@@ -241,6 +244,7 @@ details.code pre { color: #D7D4CC; }
     <a href="#jams">Game jams</a>
     <a href="#plateau">Jeux de société</a>
     <a href="#poles">Services</a>
+    <a href="#ia">IA</a>
     <a href="#parcours">Parcours</a>
     <a href="#contact" class="cta">Me contacter</a>
   </div>
@@ -493,7 +497,6 @@ public class GainResourcePerAdjacentSameType : AbilityEffect
     <div class="sec-head">
       <div style="display:grid;gap:10px"><span class="mono">Unity · C# · jouables sur itch.io</span><h2 id="h-jams" class="scr">Game jams</h2></div>
     </div>
-    <div class="jam-note"><div class="tape"></div><p>Cinq game jams, cinq jeux <b class="acc">terminés dans le temps imparti</b> : un thème imposé, une équipe réduite, un jeu jouable à rendre avant la fin du chrono.</p></div>
     <div class="cards small" data-list>
       <article class="card frame notch" data-tags="dev gd"><div class="in">
         <div class="viz shot"><img src="jams/shadow.png" alt="Shadow Project.exe : silhouette noire d'une créature à un œil" loading="lazy"></div>
@@ -597,6 +600,39 @@ public class GainResourcePerAdjacentSameType : AbilityEffect
         <ul><li>Boucles de jeu et progression</li><li>Systèmes de pouvoirs et de capacités</li><li>Réglage du ressenti à partir de tests en jeu</li><li>Prototypes rapides, rodés en game jam</li><li>Jeux de société et design accessible</li></ul></div>
       <div class="pole" data-pole="ops"><span class="big">P</span><span class="mono" style="color:var(--ops)">Pôle Gestion</span><h3>Gestion de projet</h3>
         <ul><li>Découpage en jalons et en livrables clairs</li><li>Dépôt Git propre, contenu organisé en paquets</li><li>Notes de mise à jour à chaque version</li><li>Outils IA pour livrer vite et garder une trace de tout</li></ul></div>
+    </div>
+  </section>
+
+  <section class="sec reg" id="ia" aria-labelledby="h-ia">
+    <div class="sec-head">
+      <div style="display:grid;gap:10px"><span class="mono">Outils et méthode</span><h2 id="h-ia" class="scr">IA appliquée</h2></div>
+      <p>J'utilise l'IA comme une équipe que je dirige : je conçois, je découpe, je relis et je valide en jeu.</p>
+    </div>
+    <div class="ai-grid">
+      <div class="ai-card">
+        <span class="mono acc">IA.01 / Agents de code</span>
+        <h3>Développer avec des agents</h3>
+        <p>Je travaille au quotidien avec des agents de code. Je rédige les consignes, je répartis le travail entre plusieurs agents et je relis chaque changement avant de l'intégrer.</p>
+        <div class="chips"><span>Claude Code</span><span>Codex</span><span>Multi-agents</span></div>
+      </div>
+      <div class="ai-card">
+        <span class="mono acc">IA.02 / MCP</span>
+        <h3>Piloter les éditeurs</h3>
+        <p>Je branche les agents directement sur les outils de production par le protocole MCP : ils lisent une scène, placent des objets ou lancent une action dans l'éditeur.</p>
+        <div class="chips"><span>Unreal Engine</span><span>Blender</span><span>s&amp;box</span></div>
+      </div>
+      <div class="ai-card">
+        <span class="mono acc">IA.03 / Automatisation</span>
+        <h3>Outils sur mesure</h3>
+        <p>J'écris des skills, des hooks et des agents spécialisés. Exemple : les notes de mise à jour d'un serveur sont rédigées à partir des commits Git, prêtes à publier en jeu et sur Discord.</p>
+        <div class="chips"><span>Skills</span><span>Hooks</span><span>Agents spécialisés</span></div>
+      </div>
+      <div class="ai-card">
+        <span class="mono acc">IA.04 / Mémoire</span>
+        <h3>Une base de connaissances vivante</h3>
+        <p>J'ai construit un « second cerveau » Obsidian que mes agents consultent et enrichissent à chaque session, avec une veille technique triée automatiquement chaque matin.</p>
+        <div class="chips"><span>Obsidian</span><span>Graphe de connaissances</span><span>Veille automatisée</span></div>
+      </div>
     </div>
   </section>
 
