@@ -195,6 +195,10 @@ dl.sheet dd { margin: 0; }
 .edu-year { font: 900 clamp(48px, 8vw, 88px)/.8 var(--f-display); color: transparent; -webkit-text-stroke: 1.5px var(--acc); }
 .edu h3 { font-size: clamp(20px, 2.6vw, 30px); font-weight: 900; }
 .card-body { min-width: 0; }
+/* Une carte dont le code est ouvert prend toute la largeur ; sinon le code défile */
+.card:has(details.code[open]) { grid-column: 1 / -1; }
+details.code { min-width: 0; max-width: 100%; }
+details.code pre { max-width: 100%; }
 .ai-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
 .ai-card { background: var(--card); padding: 22px 20px 24px; display: grid; gap: 12px; align-content: start; }
 .ai-card h3 { font-size: 17px; }
