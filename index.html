@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Timoyo — gameplay, systèmes et game design. Gamemodes et mécaniques sur Unreal (nanos world), Source et Unity. Commissions ouvertes.">
+<meta name="theme-color" content="#0D0F12">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Timoyo — Portfolio">
+<meta property="og:description" content="Timoyo — gameplay, systèmes et game design. Gamemodes et mécaniques sur Unreal (nanos world), Source et Unity. Commissions ouvertes.">
+<meta property="og:url" content="https://timoyooo.github.io/">
+<meta property="og:image" content="https://timoyooo.github.io/media/love-constellation.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230D0F12'/%3E%3Cpath d='M6 26 26 6' stroke='%23FF5B1F' stroke-width='5'/%3E%3C/svg%3E">
+<title>Timoyo — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&family=Martian+Mono:wdth,wght@75..112.5,400;600&display=swap">
+<style>
+/* Layout : feuille technique. Grosse typo large, étiquettes mono, repères d'impression, bandes hachurées. Accent = pôle filtré. Thème sombre unique. */
+:root {
+  color-scheme: dark;
+  --bg: #0D0F12;
+  --card: #15181D;
+  --line: #262B33;
+  --fg: #E9E6DF;
+  --mute: #8C9099;
+  --dev: #FF5B1F;
+  --gd: #B4A5FF;
+  --ops: #6FE3C6;
+  --acc: var(--dev);
+  --f-display: "Unbounded", "Arial Black", sans-serif;
+  --f-body: "Instrument Sans", "Segoe UI", sans-serif;
+  --f-mono: "Martian Mono", Consolas, monospace;
+}
+body[data-pole="gd"] { --acc: var(--gd); }
+body[data-pole="ops"] { --acc: var(--ops); }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 16px/1.6 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 40px;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 1160px; margin: 0 auto; display: grid; gap: 96px; }
+.mono { font-family: var(--f-mono); font-stretch: 75%; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--mute); }
+.acc { color: var(--acc); }
+h1, h2, h3 { font-family: var(--f-display); text-transform: uppercase; line-height: .95; margin: 0; text-wrap: balance; }
+h2 { font-size: clamp(28px, 4.4vw, 48px); font-weight: 900; letter-spacing: -.02em; }
+h3 { font-size: 18px; font-weight: 700; }
+p { margin: 0; max-width: 62ch; }
+a { color: inherit; }
+button { font: inherit; }
+:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+
+.tape { height: 10px; background: repeating-linear-gradient(-45deg, var(--acc) 0 6px, transparent 6px 12px); }
+.reg { position: relative; }
+.reg::before, .reg::after { content: "+"; position: absolute; top: -7px; font: 400 14px/1 var(--f-mono); color: var(--mute); }
+.reg::before { left: -5px; }
+.reg::after { right: -5px; }
+
+/* Navigation */
+.nav {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; justify-content: space-between; padding-block: 12px;
+}
+.brand { font: 900 15px var(--f-display); text-transform: uppercase; text-decoration: none; letter-spacing: -.01em; }
+.brand span { color: var(--acc); }
+.links { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.links a { font: 600 11px var(--f-mono); font-stretch: 75%; letter-spacing: .1em; text-transform: uppercase; color: var(--mute); text-decoration: none; padding-block: 4px; }
+.links a:hover { color: var(--acc); }
+.links a.cta { color: var(--bg); background: var(--fg); padding: 4px 10px; }
+.links a.cta:hover { background: var(--acc); }
+
+/* Hero */
+.hero { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 210px; gap: 28px 44px; padding-top: 48px; }
+.hero::before {
+  content: ""; position: absolute; right: 0; top: 24px; width: 46%; height: 72%; z-index: -1;
+  background: radial-gradient(circle, var(--line) 1.2px, transparent 1.6px) 0 0 / 10px 10px;
+  mask-image: linear-gradient(to left, #000, transparent);
+}
+.hero-main { display: grid; gap: 24px; min-width: 0; }
+.hero h1 { font-size: clamp(52px, 12vw, 150px); font-weight: 900; letter-spacing: -.03em; line-height: .85; }
+.hero h1 .o { color: transparent; -webkit-text-stroke: 1.5px var(--fg); }
+.lead { font-size: clamp(18px, 2.1vw, 23px); max-width: 36ch; }
+.lead b { color: var(--acc); font-weight: 600; }
+.rail { display: grid; gap: 16px; align-content: start; border-left: 1px solid var(--line); padding-left: 16px; }
+.rail div { display: grid; gap: 2px; }
+.rail .v { font: 600 13px var(--f-mono); font-stretch: 75%; text-transform: uppercase; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; }
+@media (max-width: 760px) {
+  .hero { grid-template-columns: 1fr; }
+  .rail { grid-template-columns: repeat(2, minmax(0, 1fr)); border-left: 0; padding-left: 0; border-top: 1px solid var(--line); padding-top: 16px; }
+}
+
+.btn {
+  font: 600 12px var(--f-mono); font-stretch: 75%; letter-spacing: .1em; text-transform: uppercase;
+  border: 1px solid var(--fg); padding: 14px 20px; cursor: pointer; text-decoration: none;
+  display: inline-flex; gap: 14px; align-items: center; transition: background .15s, color .15s, border-color .15s;
+}
+.btn .k { opacity: .6; }
+.btn-main { background: var(--fg); color: var(--bg); }
+.btn-main:hover { background: var(--acc); border-color: var(--acc); }
+.btn-line { background: transparent; color: var(--fg); }
+.btn-line:hover { border-color: var(--acc); color: var(--acc); }
+
+/* Sections */
+.sec { display: grid; gap: 28px; }
+.sec-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 12px 24px; border-top: 1px solid var(--line); padding-top: 18px; }
+.sec-head p { color: var(--mute); }
+
+/* Filtre */
+.filter { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.filter > span { margin-right: 8px; }
+.filter button {
+  font: 600 11px var(--f-mono); font-stretch: 75%; letter-spacing: .08em; text-transform: uppercase;
+  background: transparent; color: var(--mute); border: 1px solid var(--line); padding: 7px 12px; cursor: pointer;
+}
+.filter button[aria-pressed="true"] { color: var(--bg); background: var(--acc); border-color: var(--acc); }
+.filter button[data-pole="all"][aria-pressed="true"] { background: var(--fg); border-color: var(--fg); }
+
+/* Encoche */
+.frame { background: var(--line); padding: 1px; }
+.frame > .in { background: var(--card); height: 100%; }
+.notch, .frame > .notch { clip-path: polygon(0 0, 62% 0, calc(62% + 10px) 8px, calc(100% - 16px) 8px, 100% 24px, 100% 100%, 0 100%); }
+.frame.notch { clip-path: polygon(0 0, 62% 0, calc(62% + 10px) 8px, calc(100% - 16px) 8px, 100% 24px, 100% 100%, 0 100%); }
+
+/* Cartes */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+.cards.small { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.card .in { display: grid; grid-template-rows: auto 1fr; }
+.viz { position: relative; aspect-ratio: 16 / 9; max-width: 100%; background: #0A0C0F; overflow: hidden; }
+.viz canvas { width: 100%; height: 100%; display: block; }
+.hud { position: absolute; left: 14px; right: 14px; top: 20px; display: flex; justify-content: space-between; gap: 8px; font: 400 10px var(--f-mono); font-stretch: 75%; letter-spacing: .1em; color: var(--acc); }
+.cover { display: grid; place-items: end start; padding: 16px; background: radial-gradient(circle, var(--line) 1.2px, transparent 1.6px) 0 0 / 10px 10px, #0A0C0F; }
+.cover .t { font: 900 clamp(20px, 2.4vw, 28px)/.9 var(--f-display); text-transform: uppercase; color: transparent; -webkit-text-stroke: 1px var(--acc); overflow-wrap: anywhere; }
+.card-body { padding: 18px 20px 22px; display: grid; gap: 14px; align-content: start; border-top: 1px solid var(--line); }
+.card-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.card-body h3 { font-size: 26px; font-weight: 900; }
+.small .card-body h3 { font-size: 19px; }
+.card-body p { color: #C9C6BF; font-size: 15px; }
+.stamp { font: 600 10px var(--f-mono); font-stretch: 75%; letter-spacing: .12em; text-transform: uppercase; color: var(--acc); border: 1px solid var(--acc); padding: 3px 7px; transform: rotate(-3deg); white-space: nowrap; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font: 600 10px var(--f-mono); font-stretch: 75%; letter-spacing: .1em; text-transform: uppercase; padding: 4px 8px; background: var(--bg); color: var(--mute); }
+.tag.dev { color: var(--dev); } .tag.gd { color: var(--gd); } .tag.ops { color: var(--ops); }
+dl.sheet { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 5px 16px; font: 400 11px var(--f-mono); font-stretch: 75%; text-transform: uppercase; letter-spacing: .06em; }
+dl.sheet dt { color: var(--mute); }
+dl.sheet dd { margin: 0; }
+.todo { color: var(--mute); border-bottom: 1px dashed var(--mute); }
+.play { font: 600 11px var(--f-mono); font-stretch: 75%; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; color: var(--acc); justify-self: start; }
+.play:hover { text-decoration: underline; }
+.empty { color: var(--mute); }
+
+.jam-note { display: flex; gap: 14px; align-items: center; border: 1px solid var(--line); background: var(--card); padding: 14px 18px; }
+.jam-note .tape { width: 40px; flex: none; height: 28px; }
+
+/* Pôles */
+.poles { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.pole { --p: var(--dev); background: var(--card); border: 1px solid var(--line); border-top: 3px solid var(--p); padding: 24px 22px; display: grid; gap: 16px; align-content: start; }
+.pole[data-pole="gd"] { --p: var(--gd); }
+.pole[data-pole="ops"] { --p: var(--ops); }
+.pole .big { font: 900 72px/.8 var(--f-display); color: transparent; -webkit-text-stroke: 1px var(--p); }
+.pole h3 { font-size: 24px; }
+.pole p { color: var(--mute); font-size: 15px; }
+.pole ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.pole li { display: grid; grid-template-columns: 14px 1fr; gap: 8px; font-size: 15px; }
+.pole li::before { content: "/"; font-family: var(--f-mono); color: var(--p); }
+
+/* Méthode */
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); counter-reset: s; }
+.step { background: var(--card); padding: 20px 18px 22px; display: grid; gap: 10px; align-content: start; counter-increment: s; }
+.step::before { content: counter(s, decimal-leading-zero); font: 900 28px/1 var(--f-display); color: var(--acc); }
+.step h3 { font-size: 15px; }
+.step p { color: var(--mute); font-size: 14px; }
+
+/* Contact */
+.contact { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+.contact h2 { font-size: clamp(34px, 6vw, 72px); }
+.offers { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.offer { background: var(--card); padding: 14px 18px; display: flex; justify-content: space-between; gap: 12px; }
+.offer span:last-child { font: 400 11px var(--f-mono); font-stretch: 75%; color: var(--mute); text-transform: uppercase; letter-spacing: .08em; text-align: right; }
+.reach { display: grid; gap: 10px; }
+.reach .line { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+.reach .v { font: 600 13px var(--f-mono); font-stretch: 75%; }
+.copy { background: none; border: 0; padding: 0; color: var(--fg); cursor: pointer; user-select: all; }
+.copy:hover { color: var(--acc); }
+@media (max-width: 760px) { .contact { grid-template-columns: 1fr; } }
+.foot { display: grid; gap: 10px; }
+.edu .in { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px; padding: 28px 24px; }
+.edu-year { font: 900 clamp(48px, 8vw, 88px)/.8 var(--f-display); color: transparent; -webkit-text-stroke: 1.5px var(--acc); }
+.edu h3 { font-size: clamp(20px, 2.6vw, 30px); font-weight: 900; }
+.jam-note b { font-weight: 600; }
+.card-body { min-width: 0; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.stats > div { background: var(--bg); padding: 10px 12px; display: grid; gap: 4px; }
+.stats .n { font: 900 20px/1 var(--f-display); color: var(--acc); font-variant-numeric: tabular-nums; }
+.stats .mono { font-size: 9px; }
+.viz.clip video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.viz.clip .hud { text-shadow: 0 1px 2px #000; }
+.card-body p.feat { border-left: 2px solid var(--acc); padding-left: 12px; }
+.feat .mono { display: block; margin-bottom: 2px; }
+.fx-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.fx-list span { background: var(--bg); padding: 8px 10px; display: grid; gap: 2px; font: 400 10px var(--f-mono); font-stretch: 75%; color: var(--mute); text-transform: uppercase; letter-spacing: .06em; }
+.fx-list b { font: 700 12px var(--f-display); color: var(--fg); text-transform: uppercase; letter-spacing: 0; }
+.viz.shot { aspect-ratio: 63 / 50; }
+.viz.tree { aspect-ratio: auto; min-height: 0; padding: 44px 18px 18px; background: radial-gradient(circle, var(--line) 1px, transparent 1.4px) 0 0 / 12px 12px, #0A0C0F; overflow-x: auto; }
+.viz.tree pre { margin: 0; font: 400 12px/1.7 var(--f-mono); font-stretch: 75%; color: var(--fg); }
+.viz.tree i { font-style: normal; color: var(--acc); }
+details.code pre + pre { border-top: 1px dashed var(--line); padding-top: 14px; }
+.viz.shot img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s; }
+.viz.shot.px img { image-rendering: pixelated; }
+.card:hover .viz.shot img { transform: scale(1.04); }
+.card-body p b { color: var(--fg); font-weight: 600; }
+.combo { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: center; }
+.combo > div:not(.plus) { display: grid; gap: 4px; align-content: start; min-width: 0; }
+.combo > div span:not(.mono) { font: 400 10px var(--f-mono); font-stretch: 75%; background: var(--bg); padding: 4px 7px; overflow-wrap: anywhere; }
+.combo .plus { font: 900 22px var(--f-display); color: var(--acc); }
+details.code { border: 1px solid var(--line); background: #0A0C0F; }
+details.code summary { cursor: pointer; padding: 10px 12px; font: 600 11px var(--f-mono); font-stretch: 75%; letter-spacing: .1em; text-transform: uppercase; color: var(--acc); }
+details.code pre { margin: 0; padding: 4px 14px 16px; overflow-x: auto; font: 400 11.5px/1.6 var(--f-mono); font-stretch: 75%; color: #C9C6BF; }
+/* Palette de code : une teinte par rôle, lisible sur le fond graphite */
+details.code pre { color: #D7D4CC; }
+.t-kw { color: #C792EA; } .t-ty { color: #6FE3C6; } .t-fn { color: #82AAFF; } .t-prop { color: #9CC4FF; }
+.t-str { color: #C3E88D; } .t-key { color: #FFCB6B; } .t-num { color: #FF9E64; } .t-bi { color: #89DDFF; }
+.t-attr { color: #FFCB6B; } .t-op { color: #89DDFF; } .t-cm { color: #7E8794; font-style: italic; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } html { scroll-behavior: auto; } }
+</style>
+</head>
+<body data-pole="dev">
+<nav class="nav" aria-label="Navigation principale">
+  <a class="brand" href="#top">Timo<span>yo</span></a>
+  <div class="links">
+    <a href="#projets">Projets</a>
+    <a href="#jams">Game jams</a>
+    <a href="#plateau">Jeux de société</a>
+    <a href="#poles">Services</a>
+    <a href="#parcours">Parcours</a>
+    <a href="#contact" class="cta">Me contacter</a>
+  </div>
+</nav>
+
+<main class="wrap" id="top">
+  <section class="hero">
+    <div class="hero-main">
+      <div class="mono">Gameplay · Systèmes · Game design — <span class="acc">Commissions ouvertes</span></div>
+      <h1 class="scr">Timo<span class="o">yo</span></h1>
+      <div class="tape" style="max-width:220px"></div>
+      <p class="lead">Je conçois et développe des <b>gamemodes</b> et des <b>mécaniques</b>, de l'idée au serveur en ligne.</p>
+      <div class="row">
+        <a class="btn btn-main" href="#contact"><span class="k">→</span>Me contacter</a>
+        <a class="btn btn-line" href="#projets"><span class="k">↓</span>Voir les projets</a>
+      </div>
+    </div>
+    <aside class="rail">
+      <div><span class="mono">Moteurs</span><span class="v">Unreal · Source 1 &amp; 2 · Unity</span></div>
+      <div><span class="mono">Langages</span><span class="v">Lua · C#</span></div>
+      <div><span class="mono">Projets</span><span class="v">3 en cours · 5 jams · 2 jeux de société</span></div>
+      <div><span class="mono">Formation</span><span class="v">Master conception ludique · 2026</span></div>
+      <div><span class="mono">Statut</span><span class="v acc">● Disponible</span></div>
+    </aside>
+  </section>
+
+  <section class="sec reg" id="projets" aria-labelledby="h-proj">
+    <div class="sec-head">
+      <div style="display:grid;gap:10px"><span class="mono">Projets d'équipe · en développement</span><h2 id="h-proj" class="scr">Projets en cours</h2></div>
+      <div class="filter" role="group" aria-label="Filtrer par pôle">
+        <span class="mono">Pôle</span>
+        <button id="f-all" data-pole="all" aria-pressed="true">Tout</button>
+        <button id="f-dev" data-pole="dev" aria-pressed="false">Dev</button>
+        <button id="f-gd" data-pole="gd" aria-pressed="false">GD</button>
+        <button id="f-ops" data-pole="ops" aria-pressed="false">Gestion</button>
+      </div>
+    </div>
+    <div class="cards" data-list>
+      <article class="card frame notch" data-tags="dev ops"><div class="in">
+        <div class="viz tree" aria-label="Arborescence du gamemode">
+          <div class="hud"><span>STRUCTURE</span><span>LUA · NANOS WORLD</span></div>
+<pre>gamemode/
+├─ Bootstrap/
+│  ├─ Entry/      <i>Client · Server · Shared</i>
+│  ├─ Config/
+│  └─ Manifest/
+├─ Modules/       <i>sources par domaine</i>
+│  └─ &lt;Domaine&gt;/
+├─ Client/modules/
+├─ Server/modules/
+├─ Shared/
+└─ package.layout.json  <i>source → cible</i></pre>
+        </div>
+        <div class="card-body">
+          <div class="card-top"><span class="mono"><span class="acc">UE-01</span> / nanos world</span><span class="stamp">En cours</span></div>
+          <h3 class="scr">Projet Unreal I</h3>
+          <p>Gamemode en développement. Le code source est rangé par domaine, puis assemblé en package par un <b>manifeste de build</b> qui sépare client, serveur et partagé. Chaque ressource appartient à un <b>scope</b> : un rechargement à chaud libère tout, dans l'ordre inverse, sans fuite.</p>
+          <details class="code" id="code-ue1">
+            <summary>Voir le code</summary>
+            <pre><code data-lang="json">{
+  "version": 2,
+  "files": [
+    { "source": "Bootstrap/Entry/Server.lua",  "target": "Server/Index.lua",  "realm": "Server" },
+    { "source": "Bootstrap/Entry/Client.lua",  "target": "Client/Index.lua",  "realm": "Client" },
+    { "source": "Bootstrap/Config/Shared.lua", "target": "Shared/config.lua", "realm": "Shared" },
+    { "source": "Modules/World/Destruction.lua",
+      "target": "Server/modules/world_destruction.lua", "realm": "Server" }
+  ]
+}</code></pre>
+            <pre><code data-lang="lua">--- Crée un propriétaire de ressources, libérable indépendamment.
+function Scope.New(name, report)
+    return setmetatable({name = name, resources = {}, sequence = 0, stopped = false, report = report}, Scope)
+end
+
+--- Enregistre un nettoyage et renvoie une fonction qui le détache sans l'exécuter.
+function Scope:Defer(callback)
+    assert(type(callback) == "function", "cleanup_function_required")
+    if self.stopped then callback(); return function() end end
+    self.sequence = self.sequence + 1
+    local id = self.sequence
+    self.resources[id] = callback
+    return function() self.resources[id] = nil end
+end
+
+--- Libère toutes les ressources une seule fois, dans l'ordre inverse d'acquisition.
+function Scope:Stop()
+    if self.stopped then return end
+    self.stopped = true
+    -- … nettoyages exécutés du plus récent au plus ancien
+end</code></pre>
+          </details>
+          <div class="tags"><span class="tag dev">Dev</span><span class="tag ops">Gestion</span></div>
+          <dl class="sheet"><dt>Moteur</dt><dd>Unreal · nanos world</dd><dt>Langage</dt><dd>Lua</dd><dt>Focus</dt><dd>Build · cycle de vie</dd><dt>Format</dt><dd>Projet d'équipe</dd></dl>
+        </div>
+      </div></article>
+      <article class="card frame notch" data-tags="dev gd"><div class="in">
+        <div class="viz tree" aria-label="Services du framework">
+          <div class="hud"><span>RUNTIME</span><span>LUA · NANOS WORLD</span></div>
+<pre>framework/Shared/core/
+├─ runtime        <i>assemble les services</i>
+├─ scope          <i>cycle de vie</i>
+├─ state_machine
+├─ events · net · sync
+├─ actions · controls · movement
+├─ abilities      <i>déclaratives</i>
+├─ stats · resources · buffs
+├─ damage · healing
+└─ presentation · animation · feedback</pre>
+        </div>
+        <div class="card-body">
+          <div class="card-top"><span class="mono"><span class="acc">UE-02</span> / nanos world</span><span class="stamp">En cours</span></div>
+          <h3 class="scr">Projet Unreal II</h3>
+          <p>Framework de gameplay maison. Chaque package crée son <b>propre runtime</b>, composé de services indépendants : actions, capacités, dégâts, buffs, réseau, synchronisation. Les capacités sont <b>déclaratives</b> : phases, file d'action et règles d'annulation sont validées dès l'enregistrement.</p>
+          <details class="code" id="code-ue2">
+            <summary>Voir le code</summary>
+            <pre><code data-lang="lua">--- Crée un runtime propre au package qui l'utilise, jamais un singleton partagé.
+return function(engine)
+    local fw = {Engine = engine, Scope = Scope}
+    fw.Lifecycle = Scope.New("runtime", engine.Report)
+    fw.StateMachine = makeMachines(fw)
+    fw.Events       = makeEvents(fw)
+    fw.Net          = makeNet(fw)
+    fw.Sync         = makeSync(fw)
+    fw.Actions      = makeActions(fw)
+    fw.Ability      = makeAbilities(fw)
+    fw.Buffs        = makeBuffs(fw)
+    fw.Damage       = makeDamage(fw)
+    -- … autres services
+    return fw
+end</code></pre>
+            <pre><code data-lang="lua">--- Enregistre une capacité : décharger son contenu annule ses lancements et ses recharges.
+function service.Register(id, definition, scope)
+    assert(fw.Engine.IsServer and not fw.Lifecycle.stopped, "server_only")
+    assert(type(definition.execute) == "function", "execute_required")
+    local def = {}
+    -- Chaque capacité occupe une file : sort, corps à corps ou exclusive
+    def.lane = definition.lane or "exclusive"
+    assert(def.lane == "spell" or def.lane == "melee" or def.lane == "exclusive", "invalid_ability_lane")
+    -- Chaque phase a une durée bornée, vérifiée dès l'enregistrement
+    for _, phase in ipairs({"preparation", "execution", "channel", "recovery", "cooldown"}) do
+        def[phase] = definition[phase] == nil and 0 or definition[phase]
+        assert(duration(def[phase]), "invalid_" .. phase)
+    end
+    -- Par défaut, on peut annuler pendant la préparation et la canalisation
+    def.cancelable = {preparing = true, channeling = true}
+    -- … callbacks et règles d'annulation
+end</code></pre>
+          </details>
+          <div class="tags"><span class="tag dev">Dev</span><span class="tag gd">GD</span></div>
+          <dl class="sheet"><dt>Moteur</dt><dd>Unreal · nanos world</dd><dt>Langage</dt><dd>Lua</dd><dt>Focus</dt><dd>Architecture · services</dd><dt>Format</dt><dd>Projet d'équipe</dd></dl>
+        </div>
+      </div></article>
+<article class="card frame notch" data-tags="dev gd"><div class="in">
+        <div class="viz clip"><video id="vid-city" src="media/city.mp4" poster="media/city.jpg" muted loop playsinline autoplay preload="metadata" aria-label="Extrait en jeu : deux immeubles voxel aux fenêtres lumineuses, de nuit, avec bloom et vignette"></video><div class="hud"><span>REC ● UNITY 6 · URP</span><span>POST-PROCESS</span></div></div>
+        <div class="card-body">
+          <div class="card-top"><span class="mono"><span class="acc">TMY-03</span> / City</span><span class="stamp">En cours</span></div>
+          <h3 class="scr">Cyber City-builder</h3>
+          <p>Jeu de construction de ville dans un univers cyberpunk. Les effets des bâtiments reposent sur un système modulaire : chaque capacité associe un <b>déclencheur</b> et un <b>effet</b>, tous deux bâtis sur des classes abstraites. Un nouvel effet s'ajoute en une classe, puis s'assemble dans l'éditeur Unity sans toucher au reste du code.</p>
+          <p class="feat"><span class="mono acc">Rendu</span> Ambiance néon nocturne construite en <b>post-process</b> : le bloom fait rayonner les fenêtres et les enseignes émissives, la profondeur de champ et la vignette concentrent le regard sur la ville, le grain de film donne la texture finale.</p>
+          <div class="fx-list" aria-label="Effets de post-process utilisés">
+            <span><b>Bloom</b>seuil 0,9 · diffusion 0,7</span>
+            <span><b>Depth of Field</b>mise au point</span>
+            <span><b>Vignette</b>intensité 0,3</span>
+            <span><b>Film Grain</b>intensité 0,3</span>
+          </div>
+          <div class="combo" aria-label="Exemples de déclencheurs et d'effets">
+            <div><span class="mono">Déclencheurs</span><span>OnPlacement</span><span>OnSelectionPhase</span><span>OnTurnEnd</span></div>
+            <div class="plus" aria-hidden="true">+</div>
+            <div><span class="mono">Effets</span><span>GainResource</span><span>GainResourcePerAdjacentSameType</span><span>GrantPerTurnAction</span><span>MakeOverwritable</span></div>
+          </div>
+          <details class="code" id="code-city">
+            <summary>Voir le code</summary>
+            <pre><code data-cs>public abstract class AbilityTrigger : ScriptableObject
+{
+    public abstract void InitAbility(AbilityContext abilityContext, AbilityEffect abilityEffect);
+    public abstract void CleanupAbility(AbilityContext abilityContext, AbilityEffect abilityEffect);
+}
+
+public abstract class AbilityEffect : ScriptableObject
+{
+    public abstract void ApplyAbility(AbilityContext abilityContext);
+}
+
+// Une capacité = un déclencheur + un effet, assemblés dans l'inspecteur
+[Serializable]
+public class AbilityV2
+{
+    public AbilityTrigger abilityTrigger;
+    public AbilityEffect abilityEffect;
+
+    public void InitAbility(AbilityContext abilityContext)
+    {
+        abilityTrigger.InitAbility(abilityContext, abilityEffect);
+    }
+}
+
+// Exemple d'effet : +N ressources par voisin du même type
+public class GainResourcePerAdjacentSameType : AbilityEffect
+{
+    public ResourceType resourceType = ResourceType.VictoryPoints;
+    [Min(0)] public int quantityPerNeighbor = 1;
+
+    public override void ApplyAbility(AbilityContext abilityContext)
+    {
+        BuildingInstance own = abilityContext.Owner.GetComponent&lt;BuildingInstance&gt;();
+        int count = 0;
+        foreach (GameObject neighbor in GridManager.Instance.GetOrthogonalAdjacentBuildings(abilityContext.Owner))
+            if (neighbor.GetComponent&lt;BuildingInstance&gt;()?.Data == own.Data) count++;
+
+        if (count &gt; 0)
+            ResourceManager.Instance.AddResource(resourceType, count * quantityPerNeighbor);
+    }
+}</code></pre>
+          </details>
+          <div class="tags"><span class="tag dev">Dev</span><span class="tag gd">GD</span></div>
+          <dl class="sheet"><dt>Moteur</dt><dd>Unity</dd><dt>Langage</dt><dd>C#</dd><dt>Architecture</dt><dd>Classes abstraites · ScriptableObjects</dd><dt>Rendu</dt><dd>URP · Volume de post-process</dd><dt>Statut</dt><dd>En développement</dd></dl>
+        </div>
+      </div></article>
+    </div>
+    <p class="empty" hidden data-empty>Aucun projet en cours sur ce pôle.</p>
+  </section>
+
+  <section class="sec reg" id="archives" aria-labelledby="h-arch">
+    <div class="sec-head">
+      <div style="display:grid;gap:10px"><span class="mono">Projets terminés</span><h2 id="h-arch" class="scr">Archives</h2></div>
+    </div>
+    <div class="cards" data-list>
+      <article class="card frame notch" data-tags="dev gd ops"><div class="in">
+        <div class="viz clip"><video id="vid-love" src="media/love-constellation.mp4" poster="media/love-constellation.jpg" muted loop playsinline autoplay preload="metadata" aria-label="Extrait en jeu : Effondrement stellaire, un vortex violet qui attire et étourdit les ennemis"></video><div class="hud"><span>REC ● IN-GAME</span><span>LOVE CONSTELLATION</span></div></div>
+        <div class="card-body">
+          <div class="card-top"><span class="mono"><span class="acc">ARC-01</span> / Garry's Mod</span><span class="stamp">Fermé</span></div>
+          <h3>Serveur roleplay Jujutsu Kaisen</h3>
+          <p>Serveur Garry's Mod de jeu de rôle sur le thème de Jujutsu Kaisen : sorts innés, clans, écoles, personnalisation des personnages, système de déplacement, cosmétiques. Deux versions majeures ouvertes au public, avec des mises à jour régulières annoncées à la communauté.</p>
+          <p class="feat"><span class="mono acc">Extrait</span> Sort inné <b>Love Constellation</b> : les attaques posent des marques stellaires, puis l'Effondrement stellaire attire et étourdit tous les ennemis marqués. <b>VFX, développement et game design réalisés seul.</b></p>
+          <div class="stats">
+            <div><span class="n">1 238</span><span class="mono">Abonnés TikTok</span></div>
+            <div><span class="n">30 K</span><span class="mono">J'aime</span></div>
+            <div><span class="n">165 K</span><span class="mono">Vues, meilleure vidéo</span></div>
+          </div>
+          <div class="tags"><span class="tag dev">Dev</span><span class="tag gd">GD</span><span class="tag ops">Gestion</span></div>
+          <dl class="sheet"><dt>Moteur</dt><dd>Garry's Mod · Source 1</dd><dt>Langage</dt><dd>Lua</dd><dt>Versions</dt><dd>V1 · V2</dd><dt>Statut</dt><dd>Fermé</dd></dl>
+          <a class="play" href="https://www.tiktok.com/@foc_jjk" target="_blank" rel="noopener">Voir le TikTok du serveur ↗</a>
+        </div>
+      </div></article>
+    </div>
+    <p class="empty" hidden data-empty>Aucun projet archivé sur ce pôle.</p>
+  </section>
+
+  <section class="sec reg" id="jams" aria-labelledby="h-jams">
+    <div class="sec-head">
+      <div style="display:grid;gap:10px"><span class="mono">Unity · C# · jouables sur itch.io</span><h2 id="h-jams" class="scr">Game jams</h2></div>
+    </div>
+    <div class="jam-note"><div class="tape"></div><p>Cinq game jams, cinq jeux <b class="acc">terminés dans le temps imparti</b> : un thème imposé, une équipe réduite, un jeu jouable à rendre avant la fin du chrono.</p></div>
+    <div class="cards small" data-list>
+      <article class="card frame notch" data-tags="dev gd"><div class="in">
+        <div class="viz shot"><img src="jams/shadow.png" alt="Shadow Project.exe : silhouette noire d'une créature à un œil" loading="lazy"></div>
+        <div class="card-body">
+          <div class="card-top"><span class="mono"><span class="acc">JAM-01</span></span><span class="stamp">Jouable</span></div>
+          <h3>Shadow Project.exe</h3>
+          <p>Incarnez S.A.M.I. et échappez-vous du laboratoire où vous êtes retenu prisonnier.</p>
+          <div class="tags"><span class="tag dev">Dev</span><span class="tag gd">GD</span></div>
+          <a class="play" href="https://timoyo.itch.io/shadow-exe" target="_blank" rel="noopener">Jouer sur itch.io ↗</a>
+        </div>
+      </div></article>
+      <article class="card frame notch" data-tags="dev gd"><div class="in">
+        <div class="viz shot px"><img src="jams/jiangshi.png" alt="Jiangshi Tactics : moine en pixel art sur un chemin pavé" loading="lazy"></div>
+        <div class="card-body">
+          <div class="card-top"><span class="mono"><span class="acc">JAM-02</span></span><span class="stamp">Jouable</span></div>
+          <h3>Jiangshi Tactics</h3>
+          <p>Un jeu tactique où vous incarnez un moine pacifiste.</p>
+          <div class="tags"><span class="tag dev">Dev</span><span class="tag gd">GD</span></div>
+          <a class="play" href="https://go-for-rune.itch.io/jiangshi-tactics" target="_blank" rel="noopener">Jouer sur itch.io ↗</a>
+        </div>
+      </div></article>
+      <article class="card frame notch" data-tags="dev gd"><div class="in">
+        <div class="viz shot px"><img src="jams/dig.png" alt="Dig! Dig!! Dig!!! : logo d3 en pixel art" loading="lazy"></div>
+        <div class="card-body">
+          <div class="card-top"><span class="mono"><span class="acc">JAM-03</span></span><span class="stamp">Jouable</span></div>
+          <h3>Dig! Dig!! Dig!!!</h3>
+          <p>Affrontez un ami et minez un maximum de diamants.</p>
+          <div class="tags"><span class="tag dev">Dev</span><span class="tag gd">GD</span></div>
+          <a class="play" href="https://go-for-rune.itch.io/dig-dig-dig" target="_blank" rel="noopener">Jouer sur itch.io ↗</a>
+        </div>
+      </div></article>
+      <article class="card frame notch" data-tags="dev gd"><div class="in">
+        <div class="viz shot"><img src="jams/emotion.png" alt="Emotion Card's : boîte de dialogue et cinq cartes d'émotions" loading="lazy"></div>
+        <div class="card-body">
+          <div class="card-top"><span class="mono"><span class="acc">JAM-04</span></span><span class="stamp">Jouable</span></div>
+          <h3>Emotion Card's</h3>
+          <p>Un enfant apprend à comprendre ses émotions à l'aide d'un jeu de cartes.</p>
+          <div class="tags"><span class="tag dev">Dev</span><span class="tag gd">GD</span></div>
+          <a class="play" href="https://timoyo.itch.io/emotion-cards" target="_blank" rel="noopener">Jouer sur itch.io ↗</a>
+        </div>
+      </div></article>
+      <article class="card frame notch" data-tags="dev gd"><div class="in">
+        <div class="viz shot px"><img src="jams/bloody-mary.png" alt="Bloody Mary : personnage en pixel art" loading="lazy"></div>
+        <div class="card-body">
+          <div class="card-top"><span class="mono"><span class="acc">JAM-05</span></span><span class="stamp">Jouable</span></div>
+          <h3>Bloody Mary</h3>
+          <p>Un jeu décalé où vous tenez le bar d'un vampire.</p>
+          <div class="tags"><span class="tag dev">Dev</span><span class="tag gd">GD</span></div>
+          <a class="play" href="https://go-for-rune.itch.io/bloody-mary" target="_blank" rel="noopener">Jouer sur itch.io ↗</a>
+        </div>
+      </div></article>
+    </div>
+    <p class="empty" hidden data-empty>Aucune game jam sur ce pôle.</p>
+  </section>
+
+  <section class="sec reg" id="plateau" aria-labelledby="h-board">
+    <div class="sec-head">
+      <div style="display:grid;gap:10px"><span class="mono">Game design hors écran</span><h2 id="h-board" class="scr">Jeux de société</h2></div>
+    </div>
+    <div class="cards" data-list>
+      <article class="card frame notch" data-tags="gd ops"><div class="in">
+        <div class="viz cover"><span class="t">Nexus VI</span></div>
+        <div class="card-body">
+          <div class="card-top"><span class="mono"><span class="acc">TAB-01</span> / Cartes</span><span class="stamp">En cours</span></div>
+          <h3>Nexus VI</h3>
+          <p>Jeu de société à cartes. Bible de jeu, personnages, cartes produites à partir de tableurs, réunions d'écriture en équipe.</p>
+          <div class="tags"><span class="tag gd">GD</span><span class="tag ops">Gestion</span></div>
+        </div>
+      </div></article>
+      <article class="card frame notch" data-tags="gd"><div class="in">
+        <div class="viz cover"><span class="t">Sauvez Beboo</span></div>
+        <div class="card-body">
+          <div class="card-top"><span class="mono"><span class="acc">TAB-02</span> / Accessible</span><span class="stamp">Terminé</span></div>
+          <h3>Sauvez Beboo</h3>
+          <p>Jeu de société conçu pour les personnes atteintes de déficience visuelle.</p>
+          <div class="tags"><span class="tag gd">GD</span></div>
+        </div>
+      </div></article>
+    </div>
+    <p class="empty" hidden data-empty>Aucun jeu de société sur ce pôle.</p>
+  </section>
+
+  <section class="sec reg" id="parcours" aria-labelledby="h-edu">
+    <div class="sec-head">
+      <div style="display:grid;gap:10px"><span class="mono">Formation</span><h2 id="h-edu" class="scr">Parcours</h2></div>
+    </div>
+    <div class="edu frame notch"><div class="in">
+      <span class="edu-year">2026</span>
+      <div style="display:grid;gap:8px;min-width:0"><h3>Master en conception ludique</h3><p class="mono">Diplôme obtenu · moyenne <span class="acc">15,26/20</span></p></div>
+    </div></div>
+  </section>
+
+  <section class="sec reg" id="poles" aria-labelledby="h-poles">
+    <div class="sec-head">
+      <div style="display:grid;gap:10px"><span class="mono">Ce que je peux faire pour vous</span><h2 id="h-poles" class="scr">Services</h2></div>
+    </div>
+    <div class="poles">
+      <div class="pole" data-pole="dev"><span class="big">D</span><span class="mono" style="color:var(--p)">Pôle Dev</span><h3>Développement</h3>
+        <ul><li>Gamemodes complets, du prototype au serveur en ligne</li><li>Mécaniques sur mesure : déplacement, combat, capacités</li><li>Outils d'éditeur et de debug pour accélérer la production</li><li>Portage d'un gamemode vers nanos world ou s&amp;box</li></ul></div>
+      <div class="pole" data-pole="gd"><span class="big">GD</span><span class="mono" style="color:var(--p)">Pôle GD</span><h3>Game Design</h3>
+        <ul><li>Boucles de jeu et progression</li><li>Systèmes de pouvoirs et de capacités</li><li>Réglage du ressenti à partir de tests en jeu</li><li>Prototypes rapides, rodés en game jam</li><li>Jeux de société et design accessible</li></ul></div>
+      <div class="pole" data-pole="ops"><span class="big">P</span><span class="mono" style="color:var(--ops)">Pôle Gestion</span><h3>Gestion de projet</h3>
+        <ul><li>Découpage en jalons et en livrables clairs</li><li>Dépôt Git propre, contenu organisé en paquets</li><li>Notes de mise à jour à chaque version</li><li>Outils IA pour livrer vite et garder une trace de tout</li></ul></div>
+    </div>
+  </section>
+
+  <section class="sec reg" id="methode" aria-labelledby="h-meth">
+    <div class="sec-head">
+      <div style="display:grid;gap:10px"><span class="mono">Le déroulé d'une commission</span><h2 id="h-meth" class="scr">Méthode</h2></div>
+    </div>
+    <div class="steps">
+      <div class="step"><h3>Échange</h3><p>On parle de votre projet, de votre moteur et de vos délais.</p></div>
+      <div class="step"><h3>Devis</h3><p>Un périmètre écrit, des jalons et un prix.</p></div>
+      <div class="step"><h3>Prototype</h3><p>Une première version jouable, vite.</p></div>
+      <div class="step"><h3>Itérations</h3><p>Tests en jeu, clips à l'appui, ajustements.</p></div>
+      <div class="step"><h3>Livraison</h3><p>Code propre, notes de version, documentation.</p></div>
+      <div class="step"><h3>Suivi</h3><p>Correctifs et évolutions après la mise en ligne.</p></div>
+    </div>
+  </section>
+
+  <section class="sec reg" id="contact" aria-labelledby="h-contact">
+    <div class="contact">
+      <div style="display:grid;gap:20px">
+        <span class="mono">Commissions ouvertes</span>
+        <h2 id="h-contact" class="scr">Un projet&nbsp;? Parlons-en.</h2>
+        <div class="offers">
+          <div class="offer"><span>Gamemode complet</span><span>nanos · s&amp;box</span></div>
+          <div class="offer"><span>Mécanique sur mesure</span><span>Tous moteurs</span></div>
+          <div class="offer"><span>Portage de gamemode</span><span>Gmod → nanos · s&amp;box</span></div>
+          <div class="offer"><span>Correctifs et maintenance</span><span>Lua · C#</span></div>
+        </div>
+      </div>
+      <div class="reach">
+        <div class="line"><span class="mono">Discord</span><button class="v copy" id="copy-discord" data-copy="timoyo" title="Copier le pseudo Discord">timoyo <span class="acc">⧉</span></button></div>
+        <div class="line"><span class="mono">itch.io</span><a class="v" href="https://timoyo.itch.io/" target="_blank" rel="noopener">timoyo.itch.io ↗</a></div>
+        <a class="btn btn-main" href="https://timoyo.itch.io/" target="_blank" rel="noopener" style="justify-self:start;margin-top:8px"><span class="k">↗</span>Voir mes jeux</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot reg">
+    <div class="tape"></div>
+    <div class="mono"><span class="acc">Timoyo</span> / Portfolio / 2026 / v1</div>
+  </footer>
+</main>
+
+<script>
+const body = document.body;
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Filtre par pôle : change l'accent et masque les projets hors pôle
+function setPole(p) {
+  body.dataset.pole = p === "all" ? "dev" : p;
+  document.querySelectorAll(".filter button").forEach(b => b.setAttribute("aria-pressed", b.dataset.pole === p));
+  document.querySelectorAll("[data-list]").forEach(list => {
+    let shown = 0;
+    list.querySelectorAll("[data-tags]").forEach(c => { const on = p === "all" || c.dataset.tags.split(" ").includes(p); c.hidden = !on; shown += on; });
+    list.parentElement.querySelector("[data-empty]").hidden = shown > 0;
+  });
+}
+document.querySelectorAll(".filter button").forEach(b => b.addEventListener("click", () => setPole(b.dataset.pole)));
+
+// Extraits vidéo : figés sur l'affiche si l'utilisateur réduit les animations
+if (reduce) document.querySelectorAll("video[autoplay]").forEach(v => { v.removeAttribute("autoplay"); v.pause(); });
+
+// Coloration syntaxique : découpe le texte en tokens (commentaire, chaîne, nombre, mot, ponctuation)
+const LANGS = {
+  cs: { cm: /\/\/.*/y,
+        kw: new Set("public private protected abstract class void override foreach in if int new return readonly using var null true false".split(" ")),
+        bi: new Set(["Serializable", "Min"]) },
+  lua: { cm: /--.*/y,
+         kw: new Set("local function return end if then else elseif for in do not and or nil true false while repeat until".split(" ")),
+         bi: new Set("setmetatable assert ipairs pairs type table string math".split(" ")) },
+  json: { cm: null, kw: new Set(["true", "false", "null"]), bi: new Set() },
+};
+const esc = t => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+function highlight(src, L, lang) {
+  let out = "", i = 0;
+  const STR = /"(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'/y, NUM = /\d+(?:\.\d+)?/y, WORD = /[A-Za-z_]\w*/y, ATTR = /\[[A-Za-z]\w*(?:\([^)\n]*\))?\]/y;
+  const take = re => { re.lastIndex = i; const m = re.exec(src); return m && m.index === i ? m[0] : null; };
+  const span = (c, t) => `<span class="t-${c}">${esc(t)}</span>`;
+  while (i < src.length) {
+    let t;
+    if (L.cm && (t = take(L.cm))) out += span("cm", t);
+    else if ((t = take(STR))) {
+      let j = i + t.length; while (src[j] === " ") j++;
+      out += span(lang === "json" && src[j] === ":" ? "key" : "str", t);
+    }
+    else if ((t = take(NUM))) out += span("num", t);
+    else if (lang === "cs" && (t = take(ATTR))) out += span("attr", t);
+    else if ((t = take(WORD))) {
+      let j = i + t.length; while (src[j] === " ") j++;
+      const prev = src.slice(0, i).trimEnd().slice(-1);
+      if (L.kw.has(t)) out += span("kw", t);
+      else if (L.bi.has(t)) out += span("bi", t);
+      else if (src[j] === "(") out += span("fn", t);
+      else if (prev === "." || prev === ":") out += span("prop", t);
+      else if (/^[A-Z]/.test(t)) out += span("ty", t);
+      else out += esc(t);
+    }
+    else { t = src[i]; out += /[{}()[\]=<>+\-*/.,;:#~]/.test(t) ? span("op", t) : esc(t); }
+    i += t.length;
+  }
+  return out;
+}
+document.querySelectorAll("code[data-cs], code[data-lang]").forEach(el => {
+  const lang = el.dataset.lang || "cs";
+  el.innerHTML = highlight(el.textContent, LANGS[lang], lang);
+});
+
+// Copie du pseudo Discord
+document.querySelectorAll(".copy").forEach(b => b.addEventListener("click", () => {
+  const v = b.dataset.copy, html = b.innerHTML;
+  const done = () => { b.textContent = "Copié"; setTimeout(() => b.innerHTML = html, 1000); };
+  try { navigator.clipboard.writeText(v).then(done, () => getSelection().selectAllChildren(b)); } catch (e) { getSelection().selectAllChildren(b); }
+}));
+
+// Décodage au survol des titres
+const GLYPHS = "ABCDEFGHJKLMNPRSTUVXYZ0123456789/#%";
+document.querySelectorAll(".scr").forEach(el => {
+  const nodes = [];
+  (function walk(n) { n.childNodes.forEach(c => c.nodeType === 3 ? nodes.push([c, c.textContent]) : walk(c)); })(el);
+  let busy = false;
+  el.addEventListener("mouseenter", () => {
+    if (busy || reduce) return;
+    busy = true; let f = 0;
+    const total = nodes.reduce((s, [, t]) => s + t.length, 0), steps = 14;
+    const tick = () => {
+      let k = 0;
+      nodes.forEach(([n, t]) => { n.textContent = [...t].map(ch => (k++ < (f / steps) * total || ch === " ") ? ch : GLYPHS[Math.random() * GLYPHS.length | 0]).join(""); });
+      if (++f <= steps) setTimeout(tick, 32); else { nodes.forEach(([n, t]) => n.textContent = t); busy = false; }
+    };
+    tick();
+  });
+});
+</script>
+</body>
+</html>
