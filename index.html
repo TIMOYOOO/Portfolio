@@ -195,6 +195,7 @@ dl.sheet dd { margin: 0; }
 .edu-year { font: 900 clamp(48px, 8vw, 88px)/.8 var(--f-display); color: transparent; -webkit-text-stroke: 1.5px var(--acc); }
 .edu h3 { font-size: clamp(20px, 2.6vw, 30px); font-weight: 900; }
 .card-body { min-width: 0; }
+.in > .card-body:first-child { border-top: 0; padding-top: 26px; }
 /* Une carte dont le code est ouvert prend toute la largeur ; sinon le code défile */
 .card:has(details.code[open]) { grid-column: 1 / -1; }
 details.code { min-width: 0; max-width: 100%; }
@@ -246,7 +247,7 @@ details.code pre { color: #D7D4CC; }
   <div class="links">
     <a href="#projets">Projets</a>
     <a href="#jams">Game jams</a>
-    <a href="#plateau">Jeux de société</a>
+    <a href="#plateau">Jeu de société</a>
     <a href="#poles">Services</a>
     <a href="#ia">IA</a>
     <a href="#parcours">Parcours</a>
@@ -270,7 +271,7 @@ details.code pre { color: #D7D4CC; }
       <div><span class="mono">Expérience</span><span class="v">Jeu &amp; modding depuis 2018</span></div>
       <div><span class="mono">Moteurs</span><span class="v">Unreal · Source 1 &amp; 2 · Unity</span></div>
       <div><span class="mono">Langages</span><span class="v">Lua · C#</span></div>
-      <div><span class="mono">Projets</span><span class="v">3 en cours · 5 jams · 2 jeux de société</span></div>
+      <div><span class="mono">Projets</span><span class="v">3 en cours · 5 jams · 1 jeu de société</span></div>
       <div><span class="mono">Formation</span><span class="v">Master conception ludique · 2026</span></div>
       <div><span class="mono">Statut</span><span class="v acc">● Disponible</span></div>
     </aside>
@@ -559,22 +560,12 @@ public class GainResourcePerAdjacentSameType : AbilityEffect
 
   <section class="sec reg" id="plateau" aria-labelledby="h-board">
     <div class="sec-head">
-      <div style="display:grid;gap:10px"><span class="mono">Game design hors écran</span><h2 id="h-board" class="scr">Jeux de société</h2></div>
+      <div style="display:grid;gap:10px"><span class="mono">Game design hors écran</span><h2 id="h-board" class="scr">Jeu de société</h2></div>
     </div>
     <div class="cards" data-list>
-      <article class="card frame notch" data-tags="gd ops"><div class="in">
-        <div class="viz cover"><span class="t">Nexus VI</span></div>
-        <div class="card-body">
-          <div class="card-top"><span class="mono"><span class="acc">TAB-01</span> / Cartes</span><span class="stamp">En cours</span></div>
-          <h3>Nexus VI</h3>
-          <p>Jeu de société à cartes. Bible de jeu, personnages, cartes produites à partir de tableurs, réunions d'écriture en équipe.</p>
-          <div class="tags"><span class="tag gd">GD</span><span class="tag ops">Gestion</span></div>
-        </div>
-      </div></article>
       <article class="card frame notch" data-tags="gd"><div class="in">
-        <div class="viz cover"><span class="t">Sauvez Beboo</span></div>
         <div class="card-body">
-          <div class="card-top"><span class="mono"><span class="acc">TAB-02</span> / Accessible</span><span class="stamp">Terminé</span></div>
+          <div class="card-top"><span class="mono"><span class="acc">TAB-01</span> / Accessible</span><span class="stamp">Terminé</span></div>
           <h3>Sauvez Beboo</h3>
           <p>Jeu de société conçu pour les personnes atteintes de déficience visuelle.</p>
           <div class="tags"><span class="tag gd">GD</span></div>
