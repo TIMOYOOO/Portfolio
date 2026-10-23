@@ -270,7 +270,7 @@ details.code pre { color: #D7D4CC; }
       <div><span class="mono">Expérience</span><span class="v">Jeu &amp; modding depuis 2018</span></div>
       <div><span class="mono">Moteurs</span><span class="v">Unreal · Source 1 &amp; 2 · Unity</span></div>
       <div><span class="mono">Langages</span><span class="v">Lua · C#</span></div>
-      <div><span class="mono">Projets</span><span class="v">3 en cours · 5 jams</span></div>
+      <div><span class="mono">Projets</span><span class="v">4 en cours · 5 jams</span></div>
       <div><span class="mono">Formation</span><span class="v">Master conception ludique · 2026</span></div>
       <div><span class="mono">Statut</span><span class="v" style="color:var(--mute)">● Indisponible</span></div>
     </aside>
@@ -400,6 +400,92 @@ end</code></pre>
           </details>
           <div class="tags"><span class="tag dev">Dev</span><span class="tag gd">GD</span></div>
           <dl class="sheet"><dt>Moteur</dt><dd>Unreal · nanos world</dd><dt>Langage</dt><dd>Lua</dd><dt>Focus</dt><dd>Architecture · services</dd><dt>Format</dt><dd>Projet d'équipe</dd></dl>
+        </div>
+      </div></article>
+<article class="card frame notch" data-tags="dev gd"><div class="in">
+        <div class="viz tree" aria-label="Arborescence du gamemode">
+          <div class="hud"><span>STRUCTURE</span><span>C# · S&amp;BOX</span></div>
+<pre>code/
+├─ Quests/
+│  ├─ Triggers/      <i>quand la quête démarre</i>
+│  ├─ Conditions/    <i>ce qu'il faut remplir</i>
+│  ├─ Objectives/    <i>ce qu'il faut faire</i>
+│  ├─ Rewards/
+│  ├─ Consequences/
+│  └─ Events/ · Runtime/ · Persistence/
+├─ Status/           <i>effets pilotés par données</i>
+├─ AI/ · Movement/ · Environment/
+├─ Inventory/ · Items/ · Npc/
+└─ ui/
+Editor/              <i>outils sur mesure</i></pre>
+        </div>
+        <div class="card-body">
+          <div class="card-top"><span class="mono"><span class="acc">S2-01</span> / s&amp;box</span><span class="stamp">En cours</span></div>
+          <h3 class="scr">Projet Source 2</h3>
+          <p>Gamemode multijoueur en développement. Les quêtes sont <b>assemblées dans l'éditeur</b> à partir de modules indépendants (déclencheurs, conditions, objectifs, récompenses, conséquences), sérialisées en JSON et <b>validées avant d'être jouées</b>. Les effets de statut suivent le même principe : un catalogue de clés et des données, sans code à réécrire.</p>
+          <details class="code" id="code-s2">
+            <summary>Voir le code</summary>
+            <pre><code data-cs>// Chaque brique de quête est un module abstrait : on en crée un nouveau en une classe
+public abstract class QuestTrigger : QuestModule
+{
+    public abstract bool Matches( IQuestEvent ev, QuestContext ctx );
+}
+
+public abstract class QuestCondition : QuestModule
+{
+    public abstract bool IsMet( QuestContext ctx );
+    // Réévaluée seulement quand un événement peut la faire changer
+    public virtual bool IsInvalidatedBy( IQuestEvent ev ) =&gt; true;
+}
+
+public abstract class QuestObjective : QuestModule
+{
+    public abstract void OnActivated( QuestInstance inst, QuestContext ctx );
+    public abstract void HandleEvent( QuestInstance inst, QuestContext ctx, IQuestEvent ev );
+    public abstract ObjectiveStatus Evaluate( QuestInstance inst );
+}
+
+public abstract class QuestReward : QuestModule
+{
+    public abstract void Grant( QuestContext ctx );
+}
+
+public abstract class QuestConsequence : QuestModule
+{
+    public abstract void Execute( QuestContext ctx );
+}</code></pre>
+            <pre><code data-cs>// Exemple d'objectif : atteindre une zone, configurable depuis l'éditeur
+[Title( "Reach a location" ), Icon( "place" ), Category( "Objectives" )]
+public class ReachLocationObjective : QuestObjective
+{
+    [Property, Title( "Zone Id" )]
+    public string ZoneId { get; set; } = "";
+
+    public override void OnActivated( QuestInstance inst, QuestContext ctx )
+        =&gt; inst.StateOf( this ).Status = ObjectiveStatus.Active;
+
+    public override void HandleEvent( QuestInstance inst, QuestContext ctx, IQuestEvent ev )
+    {
+        var state = inst.StateOf( this );
+        if ( state.Status != ObjectiveStatus.Active )
+            return;
+
+        if ( ev is ZoneEnteredEvent zone &amp;&amp; zone.ZoneId == ZoneId )
+            state.Status = ObjectiveStatus.Completed;
+    }
+
+    public override ObjectiveStatus Evaluate( QuestInstance inst ) =&gt; inst.StateOf( this ).Status;
+
+    // Une quête mal configurée est signalée dans l'éditeur, pas en jeu
+    public override IEnumerable&lt;QuestValidationError&gt; Validate( QuestResource quest )
+    {
+        if ( string.IsNullOrWhiteSpace( ZoneId ) )
+            yield return new QuestValidationError( this, "Objective \"Reach a location\" has no zone Id." );
+    }
+}</code></pre>
+          </details>
+          <div class="tags"><span class="tag dev">Dev</span><span class="tag gd">GD</span></div>
+          <dl class="sheet"><dt>Moteur</dt><dd>s&amp;box · Source 2</dd><dt>Langage</dt><dd>C#</dd><dt>Focus</dt><dd>Systèmes pilotés par données</dd><dt>Format</dt><dd>Projet d'équipe</dd></dl>
         </div>
       </div></article>
 <article class="card frame notch" data-tags="dev gd"><div class="in">
