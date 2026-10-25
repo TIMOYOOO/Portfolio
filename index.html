@@ -289,63 +289,95 @@ details.code pre { color: #D7D4CC; }
     </div>
     <div class="cards" data-list>
       <article class="card frame notch" data-tags="dev ops"><div class="in">
-        <div class="viz tree" aria-label="Arborescence du gamemode">
-          <div class="hud"><span>STRUCTURE</span><span>LUA · NANOS WORLD</span></div>
-<pre>gamemode/
-├─ Bootstrap/
-│  ├─ Entry/      <i>Client · Server · Shared</i>
-│  ├─ Config/
-│  └─ Manifest/
-├─ Modules/       <i>sources par domaine</i>
-│  └─ &lt;Domaine&gt;/
-├─ Client/modules/
-├─ Server/modules/
-├─ Shared/
-└─ package.layout.json  <i>source → cible</i></pre>
+        <div class="viz tree" aria-label="Arborescence du gamemode après le portage C#">
+          <div class="hud"><span>STRUCTURE</span><span>C# · NANOS WORLD</span></div>
+<pre>core/                  <i>≈ 50 modules, 270 fichiers C#</i>
+├─ CoreRuntime · ModuleStartup
+├─ &lt;Module&gt;/
+│  ├─ Module.Server.cs    <i>branche le moteur</i>
+│  ├─ Module.Client.cs
+│  ├─ Protocol.cs         <i>messages validés</i>
+│  └─ Service.Server.cs   <i>logique testable</i>
+lib/                   <i>réseau, scopes, planificateur</i>
+host/                  <i>hôte Lua minimal</i>
+tests/
+├─ &lt;Module&gt;ParityTests.cs
+└─ Corpus/             <i>scénarios enregistrés</i></pre>
         </div>
         <div class="card-body">
           <div class="card-top"><span class="mono"><span class="acc">UE-01</span> / nanos world</span><span class="stamp">En cours</span></div>
           <h3 class="scr">Projet Unreal I</h3>
-          <p>Gamemode en développement. Le code source est rangé par domaine, puis assemblé en package par un <b>manifeste de build</b> qui sépare client, serveur et partagé. Chaque ressource appartient à un <b>scope</b> : un rechargement à chaud libère tout, dans l'ordre inverse, sans fuite.</p>
+          <p>Gamemode en développement, <b>porté du Lua vers le C#</b>, serveur et client. Le code est découpé en une cinquantaine de modules. Chaque module parle au moteur à travers une <b>interface</b> : sa logique se teste hors du jeu. La parité avec l'ancienne version est vérifiée par <b>127 tests</b> qui rejouent sur le C# des scénarios enregistrés sur le Lua.</p>
           <details class="code" id="code-ue1">
             <summary>Voir le code</summary>
-            <pre><code data-lang="json">{
-  "version": 2,
-  "files": [
-    { "source": "Bootstrap/Entry/Server.lua",  "target": "Server/Index.lua",  "realm": "Server" },
-    { "source": "Bootstrap/Entry/Client.lua",  "target": "Client/Index.lua",  "realm": "Client" },
-    { "source": "Bootstrap/Config/Shared.lua", "target": "Shared/config.lua", "realm": "Shared" },
-    { "source": "Modules/World/Destruction.lua",
-      "target": "Server/modules/world_destruction.lua", "realm": "Server" }
-  ]
+            <pre><code data-cs>// La logique du module ne connaît pas le moteur : elle passe par cette interface
+public interface IUseWorld
+{
+    object? Body(object player);
+    bool Alive(object? body);
+    // Une restriction de mouvement immobilise le corps
+    bool Blocked(object body);
+    object? FindProp(long id);
+    (double X, double Y, double Z) Location(object entity);
+    bool Attach(object prop, object body);
+    Action After(double milliseconds, Action callback);
+}
+
+// En jeu, une implémentation branche le moteur ; dans les tests, une fausse implémentation enregistre les appels
+internal sealed class NanosUseWorld(Scope scope) : IUseWorld
+{
+    public bool Alive(object? body) =&gt; body is CharacterSimple { IsValid: true } simple &amp;&amp; simple.GetHealth() &gt; 0;
+    public object? FindProp(long id) =&gt; Server.GetEntityByID((uint)id) is Prop { IsValid: true } prop ? prop : null;
+    public Action After(double milliseconds, Action callback) =&gt; CoreRuntime.Current.Scheduler.After(scope, milliseconds, callback);
+    // …
 }</code></pre>
-            <pre><code data-lang="lua">--- Crée un propriétaire de ressources, libérable indépendamment.
-function Scope.New(name, report)
-    return setmetatable({name = name, resources = {}, sequence = 0, stopped = false, report = report}, Scope)
-end
+            <pre><code data-cs>// Chaque message réseau est validé : uniquement les clés attendues, des identifiants bornés
+public static bool ValidCarry(object? message)
+{
+    if (!Payload.IsMap(message) || Payload.Keys(message).Any(key =&gt; key as string is not ("op" or "id")))
+    {
+        return false;
+    }
+    var op = Payload.Get(message, "op");
+    if (op as string == "drop")
+    {
+        return Payload.Get(message, "id") is null;
+    }
+    return op as string == "pick" &amp;&amp; NetworkId(Payload.Get(message, "id"));
+}</code></pre>
+            <pre><code data-cs>// Démarrage protégé : un module qui plante est signalé, les suivants démarrent quand même
+internal sealed class ModuleStartup(string phase)
+{
+    private readonly List&lt;string&gt; _failed = [];
 
---- Enregistre un nettoyage et renvoie une fonction qui le détache sans l'exécuter.
-function Scope:Defer(callback)
-    assert(type(callback) == "function", "cleanup_function_required")
-    if self.stopped then callback(); return function() end end
-    self.sequence = self.sequence + 1
-    local id = self.sequence
-    self.resources[id] = callback
-    return function() self.resources[id] = nil end
-end
-
---- Libère toutes les ressources une seule fois, dans l'ordre inverse d'acquisition.
-function Scope:Stop()
-    if self.stopped then return end
-    self.stopped = true
-    -- … nettoyages exécutés du plus récent au plus ancien
-end</code></pre>
+    public void Run(string module, Action action)
+    {
+        try
+        {
+            action();
+        }
+        catch (Exception error)
+        {
+            _failed.Add(module);
+            CoreRuntime.Report($"{phase} {module} failed: {ErrorText.Describe(error)}");
+        }
+    }
+}</code></pre>
+            <pre><code data-cs>// Test de parité : un scénario enregistré sur la version Lua est rejoué pas à pas sur le C#
+[Fact]
+public void Use_server_replays_the_lua_corpus()
+{
+    // … rejoue chaque étape du corpus et compare les appels au moteur
+    Assert.True(valid == (bool)entry["accepted"]!, $"{replay.Step}: C# validation says {valid}");
+    // …
+    Assert.True(replay.Steps &gt; 100);
+}</code></pre>
           </details>
           <div class="tags"><span class="tag dev">Dev</span><span class="tag ops">Gestion</span></div>
-          <dl class="sheet"><dt>Moteur</dt><dd>Unreal · nanos world</dd><dt>Langage</dt><dd>Lua</dd><dt>Focus</dt><dd>Build · cycle de vie</dd><dt>Format</dt><dd>Projet d'équipe</dd></dl>
+          <dl class="sheet"><dt>Moteur</dt><dd>Unreal · nanos world</dd><dt>Langage</dt><dd>C# (porté depuis Lua)</dd><dt>Focus</dt><dd>Portage · code testable</dd><dt>Format</dt><dd>Projet d'équipe</dd></dl>
         </div>
       </div></article>
-      <article class="card frame notch" data-tags="dev gd"><div class="in">
+<article class="card frame notch" data-tags="dev gd"><div class="in">
         <div class="viz tree" aria-label="Services du framework">
           <div class="hud"><span>RUNTIME</span><span>LUA · NANOS WORLD</span></div>
 <pre>framework/Shared/core/
@@ -781,7 +813,7 @@ if (reduce) document.querySelectorAll("video[autoplay]").forEach(v => { v.remove
 // Coloration syntaxique : découpe le texte en tokens (commentaire, chaîne, nombre, mot, ponctuation)
 const LANGS = {
   cs: { cm: /\/\/.*/y,
-        kw: new Set("public private protected abstract class void override foreach in if int new return readonly using var null true false".split(" ")),
+        kw: new Set("public private protected internal abstract sealed static class interface void override foreach in if else int long double bool string object new return readonly using var null true false is not try catch yield".split(" ")),
         bi: new Set(["Serializable", "Min"]) },
   lua: { cm: /--.*/y,
          kw: new Set("local function return end if then else elseif for in do not and or nil true false while repeat until".split(" ")),
