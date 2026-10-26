@@ -246,6 +246,7 @@ details.code pre { color: #D7D4CC; }
   <a class="brand" href="#top">Timo<span>yo</span></a>
   <div class="links">
     <a href="#projets">Projets</a>
+    <a href="#outils">Outils</a>
     <a href="#jams">Game jams</a>
     <a href="#poles">Services</a>
     <a href="#ia">IA</a>
@@ -270,7 +271,7 @@ details.code pre { color: #D7D4CC; }
       <div><span class="mono">Expérience</span><span class="v">Jeu &amp; modding depuis 2018</span></div>
       <div><span class="mono">Moteurs</span><span class="v">Unreal · Source 1 &amp; 2 · Unity</span></div>
       <div><span class="mono">Langages</span><span class="v">Lua · C#</span></div>
-      <div><span class="mono">Projets</span><span class="v">3 en cours · 1 en pause · 2 Garry's Mod · 5 jams</span></div>
+      <div><span class="mono">Projets</span><span class="v">3 en cours · 1 en pause · 2 outils · 2 Garry's Mod · 5 jams</span></div>
       <div><span class="mono">Formation</span><span class="v">Master conception ludique · 2026</span></div>
       <div><span class="mono">Statut</span><span class="v" style="color:var(--mute)">● Indisponible</span></div>
     </aside>
@@ -590,6 +591,97 @@ public class GainResourcePerAdjacentSameType : AbilityEffect
     <p class="empty" hidden data-empty>Aucun projet en cours sur ce pôle.</p>
   </section>
 
+  <section class="sec reg" id="outils" aria-labelledby="h-tools">
+    <div class="sec-head">
+      <div style="display:grid;gap:10px"><span class="mono">Applications Windows · en cours</span><h2 id="h-tools" class="scr">Outils de bureau</h2></div>
+    </div>
+    <div class="cards" data-list>
+      <article class="card frame notch" data-tags="dev"><div class="in">
+        <div class="viz tree" aria-label="Arborescence d'Engram">
+          <div class="hud"><span>STRUCTURE</span><span>NODE.JS · ELECTRON</span></div>
+<pre>engram/
+├─ packages/
+│  ├─ protocol/   <i>contrat JSON validé</i>
+│  ├─ daemon/     <i>garde les shells en vie</i>
+│  └─ deck/       <i>fenêtre Electron</i>
+│     └─ test/
+└─ scripts/       <i>installeur, lanceur</i></pre>
+        </div>
+        <div class="card-body">
+          <div class="card-top"><span class="mono"><span class="acc">OUT-01</span> / Projet perso</span><span class="stamp">v0.1 · MVP</span></div>
+          <h3 class="scr">Engram</h3>
+          <p>Un terminal dont les sessions <b>survivent à sa fenêtre</b>. Un démon garde les shells en vie et mémorise leur écran ; la fenêtre, en Electron, les affiche en onglets. On la ferme, on la rouvre : chaque terminal revient exactement où il en était.</p>
+          <div class="fx-list" aria-label="Fonctionnalités">
+            <span><b>Reprise d'écran</b>couleurs, curseur, historique</span>
+            <span><b>Onglets</b>raccourcis clavier, renommage</span>
+            <span><b>Projets</b>panneau de conversations d'agents</span>
+            <span><b>Installeur</b>Windows, en un clic</span>
+          </div>
+          <details class="code" id="code-engram">
+            <summary>Voir le code</summary>
+            <pre><code data-lang="js">// Les shells qu'un client peut demander, par clé : l'exécutable est toujours choisi ici, jamais par le client
+const SHELLS = {
+  powershell: () => ({ file: join(SYSTEM, 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe'), args: ['-NoLogo'] }),
+  cmd: () => ({ file: process.env.ComSpec || join(SYSTEM, 'System32', 'cmd.exe'), args: [] }),
+  gitbash: () => {
+    const roots = [process.env.ProgramFiles, process.env['ProgramFiles(x86)'], 'C:\\Program Files'].filter(Boolean);
+    const file = roots.map((root) => join(root, 'Git', 'bin', 'bash.exe')).find(existsSync);
+    return file ? { file, args: ['--login', '-i'] } : null;
+  },
+};</code></pre>
+            <pre><code data-lang="js">// L'écran sous forme de séquences d'échappement : écrit dans un terminal neuf, il le reproduit (couleurs, curseur, modes)
+snapshot() {
+  const screen = this.serializer.serialize({ scrollback: SNAPSHOT_SCROLLBACK });
+  // Le curseur est replacé en position absolue : un déplacement relatif tombe une colonne trop à gauche
+  // après une ligne qui remplit la dernière colonne
+  const { cursorX, cursorY } = this.screen.buffer.active;
+  return `${screen}\x1b[${cursorY + 1};${cursorX + 1}H`;
+}
+
+// Un client qui ne s'identifie pas avec le jeton dans les 3 secondes voit la porte se fermer
+const timer = setTimeout(() => !client.authed && ws.close(4401, 'hello expected'), HELLO_TIMEOUT_MS);</code></pre>
+          </details>
+          <div class="tags"><span class="tag dev">Dev</span></div>
+          <dl class="sheet"><dt>Plateforme</dt><dd>Windows</dd><dt>Pile</dt><dd>Node.js · Electron · xterm.js · node-pty</dd><dt>Format</dt><dd>Projet perso</dd><dt>Statut</dt><dd>MVP terminé · v0.1.0</dd></dl>
+        </div>
+      </div></article>
+      <article class="card frame notch" data-tags="dev"><div class="in">
+        <div class="card-body">
+          <div class="card-top"><span class="mono"><span class="acc">OUT-02</span> / Open source</span><span class="stamp">Contribution</span></div>
+          <h3 class="scr">Capri</h3>
+          <p>Un compagnon de bureau qui raconte ce que fait Claude Code : actions en cours, demandes de permission, fin de tâche. C'est un projet open source de <a href="https://github.com/mochiiwuff/capri-desktop" target="_blank" rel="noopener">mochiiwuff</a> (licence MIT), auquel je contribue sur mon fork.</p>
+          <p class="feat"><span class="mono acc">Mes ajouts</span> Un <b>agenda local</b> (événements, tâches, rappels) que l'on remplit en parlant au chat, en cinq langues, avec une <b>confirmation avant chaque changement</b> ; un <b>menu principal</b> ; un second moteur de conversation, <b>Claude Haiku</b> en option à côté d'Ollama en local ; l'intégration renforcée d'une contribution externe.</p>
+          <details class="code" id="code-capri">
+            <summary>Voir le code</summary>
+            <pre><code data-lang="js">// De quoi parle une phrase dite au chat : « supprime le dentiste », « décale le dentiste à jeudi 15h »,
+// « tu as bien noté ma réunion ? », « qu'est-ce que j'ai demain ? ». Rien n'est modifié ici :
+// l'interface demande d'abord un clic de confirmation.
+
+// Un ordre se dit en début de phrase, après une formule de politesse éventuelle
+const order = (verbs, polite) => new RegExp(String.raw`^(?:(?:${polite})\s+)?(?:${verbs})(?=[\s,:]|$)`, 'i');
+const DELETE = {
+  fr: order('supprime|supprimer|efface|effacer|annule|annuler|retire|retirer|enl[èe]ve|enlever', 'peux-tu|pourrais-tu|tu peux|stp'),
+  en: order('delete|remove|cancel|clear|erase|drop', 'can you|could you|please'),
+  // … es, pt, ru
+};
+const MOVE = {
+  fr: order('d[ée]cale|d[ée]caler|d[ée]place|d[ée]placer|reporte|reporter|change|changer|modifie|modifier', 'peux-tu|pourrais-tu|tu peux|stp'),
+  en: order('move|reschedule|postpone|push|change|edit|update|shift', 'can you|could you|please'),
+  // … es, pt, ru
+};
+
+// Sans accents ni ponctuation, pour retrouver un élément quelle que soit la façon de l'écrire
+const norm = (text) => String(text).toLowerCase().normalize('NFD').replace(/\p{M}+/gu, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();</code></pre>
+          </details>
+          <div class="tags"><span class="tag dev">Dev</span></div>
+          <dl class="sheet"><dt>Pile</dt><dd>Electron · Node.js · Ollama · API Claude</dd><dt>Mon rôle</dt><dd>Contributeur · 9 commits, ≈ 1 800 lignes</dd><dt>Licence</dt><dd>MIT</dd></dl>
+          <a class="play" href="https://github.com/TIMOYOOO/capri-desktop" target="_blank" rel="noopener">Voir mon fork sur GitHub ↗</a>
+        </div>
+      </div></article>
+    </div>
+    <p class="empty" hidden data-empty>Aucun outil sur ce pôle.</p>
+  </section>
+
   <section class="sec reg" id="archives" aria-labelledby="h-arch">
     <div class="sec-head">
       <div style="display:grid;gap:10px"><span class="mono">Projets passés</span><h2 id="h-arch" class="scr">Archives</h2></div>
@@ -818,12 +910,15 @@ const LANGS = {
   lua: { cm: /--.*/y,
          kw: new Set("local function return end if then else elseif for in do not and or nil true false while repeat until".split(" ")),
          bi: new Set("setmetatable assert ipairs pairs type table string math".split(" ")) },
+  js: { cm: /\/\/.*/y,
+        kw: new Set("const let var function return if else for of in new class this null undefined true false async await import export from".split(" ")),
+        bi: new Set("String RegExp Object Array Set Map process require".split(" ")) },
   json: { cm: null, kw: new Set(["true", "false", "null"]), bi: new Set() },
 };
 const esc = t => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 function highlight(src, L, lang) {
   let out = "", i = 0;
-  const STR = /"(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'/y, NUM = /\d+(?:\.\d+)?/y, WORD = /[A-Za-z_]\w*/y, ATTR = /\[[A-Za-z]\w*(?:\([^)\n]*\))?\]/y;
+  const STR = /"(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|`(?:[^`\\]|\\.)*`/y, NUM = /\d+(?:\.\d+)?/y, WORD = /[A-Za-z_]\w*/y, ATTR = /\[[A-Za-z]\w*(?:\([^)\n]*\))?\]/y;
   const take = re => { re.lastIndex = i; const m = re.exec(src); return m && m.index === i ? m[0] : null; };
   const span = (c, t) => `<span class="t-${c}">${esc(t)}</span>`;
   while (i < src.length) {
