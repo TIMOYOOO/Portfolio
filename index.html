@@ -195,6 +195,30 @@ dl.sheet dd { margin: 0; }
 .edu-year { font: 900 clamp(48px, 8vw, 88px)/.8 var(--f-display); color: transparent; -webkit-text-stroke: 1.5px var(--acc); }
 .edu h3 { font-size: clamp(20px, 2.6vw, 30px); font-weight: 900; }
 .card-body { min-width: 0; }
+/* Capri perchée sur une mini fenêtre d'agent */
+.capri-stage { overflow: hidden; background: radial-gradient(ellipse 22% 38% at 66% 30%, rgba(180, 165, 255, .22), transparent 70%), radial-gradient(circle, var(--line) 1px, transparent 1.4px) 0 0 / 12px 12px, #0A0C0F; }
+.mini-win { position: absolute; left: 10%; right: 10%; bottom: 12%; height: 40%; border: 1px solid #3A3F49; background: #12151A; display: grid; grid-template-rows: auto 1fr; }
+.mini-win .bar { display: flex; align-items: center; gap: 5px; padding: 6px 8px; border-bottom: 1px solid #262B33; font: 400 9px var(--f-mono); font-stretch: 75%; color: var(--mute); letter-spacing: .08em; text-transform: uppercase; }
+.mini-win .bar i { width: 6px; height: 6px; border-radius: 50%; background: #3A3F49; }
+.mini-win .bar span { margin-left: 6px; }
+.mini-win .lines { display: grid; align-content: center; gap: 4px; padding: 6px 10px; font: 400 10px var(--f-mono); font-stretch: 75%; color: #C9C6BF; }
+.mini-win .lines span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-win .lines .ok::after { content: "▍"; margin-left: 4px; color: var(--ops); animation: blink 1s steps(1) infinite; }
+.mini-win .lines b { color: var(--gd); font-weight: 600; }
+.mini-win .lines .ok b { color: var(--ops); }
+@keyframes blink { 50% { opacity: 0; } }
+.capri-sprite { position: absolute; bottom: calc(52% - 4px); left: 60%; height: 44%; width: auto; max-width: none; transform-origin: 50% 100%;
+  filter: drop-shadow(0 0 1px rgba(233, 230, 223, .9)) drop-shadow(0 0 1px rgba(233, 230, 223, .6)) drop-shadow(3px 0 0 rgba(180, 165, 255, .55)) drop-shadow(-2px 0 0 rgba(255, 46, 136, .35));
+  animation: capri-perch 2.6s ease-in-out infinite, capri-glitch 5s steps(1) infinite; }
+@keyframes capri-perch { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-5px) rotate(2deg); } }
+@keyframes capri-glitch { 0%, 91%, 97%, 100% { translate: 0 0; opacity: 1; } 92% { translate: -3px 0; opacity: .7; } 94% { translate: 4px 1px; } 96% { translate: -1px 0; opacity: .85; } }
+.capri-stage .credit { position: absolute; left: 10%; bottom: 3%; font: 400 9px var(--f-mono); font-stretch: 75%; letter-spacing: .08em; text-transform: uppercase; color: var(--mute); }
+ul.adds { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 7px; }
+ul.adds li { position: relative; padding-left: 16px; font-size: 14px; color: #C9C6BF; }
+ul.adds li::before { content: "/"; position: absolute; left: 0; font-family: var(--f-mono); color: var(--acc); }
+ul.adds b { color: var(--fg); font-weight: 600; }
+div.feat { border-left: 2px solid var(--acc); padding-left: 12px; }
+div.feat .mono { display: block; margin-bottom: 2px; }
 .in > .card-body:first-child { border-top: 0; padding-top: 26px; }
 /* Une carte dont le code est ouvert prend toute la largeur ; sinon le code défile */
 .card:has(details.code[open]) { grid-column: 1 / -1; }
@@ -600,14 +624,14 @@ public class GainResourcePerAdjacentSameType : AbilityEffect
       <article class="card frame notch" data-tags="dev"><div class="in">
         <div class="viz shot wide"><img src="media/engram.webp" alt="Engram sur le bureau Windows : fenêtre à onglets, sessions classées par projet à gauche, terminal à droite" loading="lazy"></div>
         <div class="card-body">
-          <div class="card-top"><span class="mono"><span class="acc">OUT-01</span> / Projet perso</span><span class="stamp">v0.1 · MVP</span></div>
+          <div class="card-top"><span class="mono"><span class="acc">OUT-01</span> / Projet perso</span><span class="stamp">v0.1.6</span></div>
           <h3 class="scr">Engram</h3>
           <p>Un terminal dont les sessions <b>survivent à sa fenêtre</b>. Un démon garde les shells en vie et mémorise leur écran ; la fenêtre, en Electron, les affiche en onglets. On la ferme, on la rouvre : chaque terminal revient exactement où il en était.</p>
           <div class="fx-list" aria-label="Fonctionnalités">
             <span><b>Reprise d'écran</b>couleurs, curseur, historique</span>
             <span><b>Onglets</b>raccourcis clavier, renommage</span>
             <span><b>Projets</b>panneau de conversations d'agents</span>
-            <span><b>Installeur</b>Windows, en un clic</span>
+            <span><b>Mises à jour</b>installeur Windows, mise à jour en un clic</span>
           </div>
           <details class="code" id="code-engram">
             <summary>Voir le code</summary>
@@ -634,15 +658,33 @@ snapshot() {
 const timer = setTimeout(() => !client.authed && ws.close(4401, 'hello expected'), HELLO_TIMEOUT_MS);</code></pre>
           </details>
           <div class="tags"><span class="tag dev">Dev</span></div>
-          <dl class="sheet"><dt>Plateforme</dt><dd>Windows</dd><dt>Pile</dt><dd>Node.js · Electron · xterm.js · node-pty</dd><dt>Format</dt><dd>Projet perso</dd><dt>Statut</dt><dd>MVP terminé · v0.1.0</dd></dl>
+          <dl class="sheet"><dt>Plateforme</dt><dd>Windows</dd><dt>Pile</dt><dd>Node.js · Electron · xterm.js · node-pty</dd><dt>Format</dt><dd>Projet perso</dd><dt>Statut</dt><dd>v0.1.6 · publiée</dd></dl>
+          <a class="play" href="https://github.com/TIMOYOOO/engram-releases/releases/latest" target="_blank" rel="noopener">Télécharger Engram (GitHub Releases) ↗</a>
         </div>
       </div></article>
       <article class="card frame notch" data-tags="dev"><div class="in">
+        <div class="viz capri-stage" aria-label="Capri perchée sur une fenêtre d'agent">
+          <div class="mini-win" aria-hidden="true">
+            <div class="bar"><i></i><i></i><i></i><span>agent · session</span></div>
+            <div class="lines"><span><b>EDITS</b> src/main/agenda.js</span><span><b>RUNS</b> npm test</span><span class="ok"><b>✔</b> Terminé</span></div>
+          </div>
+          <img class="capri-sprite" src="media/capri.png" alt="Capri, petite silhouette animée perchée sur la fenêtre">
+          <span class="credit">Personnage : mochiiwuff</span>
+        </div>
         <div class="card-body">
           <div class="card-top"><span class="mono"><span class="acc">OUT-02</span> / Open source</span><span class="stamp">Contribution</span></div>
           <h3 class="scr">Capri</h3>
-          <p>Un compagnon de bureau qui raconte ce que fait Claude Code : actions en cours, demandes de permission, fin de tâche. C'est un projet open source de <a href="https://github.com/mochiiwuff/capri-desktop" target="_blank" rel="noopener">mochiiwuff</a> (licence MIT), auquel je contribue sur mon fork.</p>
-          <p class="feat"><span class="mono acc">Mes ajouts</span> Un <b>agenda local</b> (événements, tâches, rappels) que l'on remplit en parlant au chat, en cinq langues, avec une <b>confirmation avant chaque changement</b> ; un <b>menu principal</b> ; un second moteur de conversation, <b>Claude Haiku</b> en option à côté d'Ollama en local ; l'intégration renforcée d'une contribution externe.</p>
+          <p>Un compagnon de bureau qui suit les agents Claude Code : actions en cours, demandes de permission, fin de tâche. C'est un projet open source de <a href="https://github.com/mochiiwuff/capri-desktop" target="_blank" rel="noopener">mochiiwuff</a> (licence MIT), que je fais évoluer sur mon fork.</p>
+          <div class="feat"><span class="mono acc">Mes ajouts</span>
+            <ul class="adds">
+              <li><b>Capri sur le téléphone</b> : une app Android native où elle apparaît, animée, par-dessus les autres applis ; des notifications à deux niveaux d'urgence ; des mises à jour envoyées depuis le PC et vérifiées par empreinte SHA-256.</li>
+              <li><b>Liaison privée</b> : le serveur du PC n'est joignable que par un réseau privé chiffré, et le téléphone se lie par QR code et jeton.</li>
+              <li><b>Mémoire durable</b> : la conversation, les faits appris (gardés après confirmation) et la lecture seule de ma base de connaissances. Les modèles cloud n'y ont pas accès.</li>
+              <li><b>Agenda piloté par le chat</b>, en cinq langues, avec une confirmation avant chaque changement.</li>
+              <li><b>Deux moteurs de conversation</b> : Ollama en local, Claude Haiku en option.</li>
+              <li>Menu principal, mode son minimal, reprise après la veille du PC, glisser Capri d'un écran à l'autre.</li>
+            </ul>
+          </div>
           <details class="code" id="code-capri">
             <summary>Voir le code</summary>
             <pre><code data-lang="js">// De quoi parle une phrase dite au chat : « supprime le dentiste », « décale le dentiste à jeudi 15h »,
@@ -666,8 +708,7 @@ const MOVE = {
 const norm = (text) => String(text).toLowerCase().normalize('NFD').replace(/\p{M}+/gu, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();</code></pre>
           </details>
           <div class="tags"><span class="tag dev">Dev</span></div>
-          <dl class="sheet"><dt>Pile</dt><dd>Electron · Node.js · Ollama · API Claude</dd><dt>Mon rôle</dt><dd>Contributeur · 9 commits, ≈ 1 800 lignes</dd><dt>Licence</dt><dd>MIT</dd></dl>
-          <a class="play" href="https://github.com/TIMOYOOO/capri-desktop" target="_blank" rel="noopener">Voir mon fork sur GitHub ↗</a>
+          <dl class="sheet"><dt>Pile</dt><dd>Electron · Node.js · Android (Java) · PWA · Ollama · API Claude</dd><dt>Mon rôle</dt><dd>Contributeur · 14 commits, ≈ 7 500 lignes</dd><dt>Licence</dt><dd>MIT</dd></dl>
         </div>
       </div></article>
     </div>
