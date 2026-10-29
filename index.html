@@ -624,15 +624,21 @@ public class GainResourcePerAdjacentSameType : AbilityEffect
       <article class="card frame notch" data-tags="dev"><div class="in">
         <div class="viz shot wide"><img src="media/engram.webp" alt="Engram sur le bureau Windows : fenêtre à onglets, sessions classées par projet à gauche, terminal à droite" loading="lazy"></div>
         <div class="card-body">
-          <div class="card-top"><span class="mono"><span class="acc">OUT-01</span> / Projet perso</span><span class="stamp">v0.1.6</span></div>
+          <div class="card-top"><span class="mono"><span class="acc">OUT-01</span> / Projet perso</span><span class="stamp">v0.9.0</span></div>
           <h3 class="scr">Engram</h3>
           <p>Un terminal dont les sessions <b>survivent à sa fenêtre</b>. Un démon garde les shells en vie et mémorise leur écran ; la fenêtre, en Electron, les affiche en onglets. On la ferme, on la rouvre : chaque terminal revient exactement où il en était.</p>
+          <p>Il est devenu un <b>poste de travail pour agents de code</b> : une vue Chat au-dessus du terminal de l'agent, un éditeur et un arbre Git, et un cerveau de notes qui s'entretient tout seul. D'autres que moi l'utilisent, avec un installeur et des mises à jour publiques.</p>
           <div class="fx-list" aria-label="Fonctionnalités">
             <span><b>Reprise d'écran</b>couleurs, curseur, historique</span>
-            <span><b>Onglets</b>raccourcis clavier, renommage</span>
-            <span><b>Projets</b>panneau de conversations d'agents</span>
-            <span><b>Mises à jour</b>installeur Windows, mise à jour en un clic</span>
+            <span><b>Vue Chat</b>diffs, questions de l'agent, sous-agents</span>
+            <span><b>Citations</b>un passage ou des lignes de code, cités dans la phrase</span>
+            <span><b>Jauges</b>contexte et quotas d'abonnement, en direct</span>
+            <span><b>Éditeur + Git</b>arbre en direct, marques, comparaison au commit</span>
+            <span><b>Cerveau</b>notes compatibles Obsidian, graphe en circuit imprimé</span>
+            <span><b>Tâches</b>planifiées, confiées à l'agent</span>
+            <span><b>Quatre styles</b>français / anglais, mises à jour dans l'app</span>
           </div>
+          <div class="viz shot"><img src="media/engram-cerveau.webp" alt="L'onglet Cerveau d'Engram : les notes dessinées comme un circuit imprimé, domaines en zones, notes en puces, liens en pistes" loading="lazy"></div>
           <details class="code" id="code-engram">
             <summary>Voir le code</summary>
             <pre><code data-lang="js">// Les shells qu'un client peut demander, par clé : l'exécutable est toujours choisi ici, jamais par le client
@@ -656,9 +662,15 @@ snapshot() {
 
 // Un client qui ne s'identifie pas avec le jeton dans les 3 secondes voit la porte se fermer
 const timer = setTimeout(() => !client.authed && ws.close(4401, 'hello expected'), HELLO_TIMEOUT_MS);</code></pre>
+            <pre><code data-lang="js">// Une tâche planifiée part dans PowerShell : ' est doublé, et ‘ ’ ‚ ‛ aussi, car PowerShell les lit comme des guillemets.
+// Sans ça, « l’agent » coupait la chaîne et le reste du prompt s'exécutait comme commande.
+export function taskScript(task) {
+  if (task.prompt) return `${OMP} --allow-home --no-session -p '${task.prompt.replace(/['\u2018\u2019\u201a\u201b]/g, (q) => q + q)}'\nexit $LASTEXITCODE`;
+  return `$global:LASTEXITCODE = 0\n${task.command}\n$engramOk = $?\nif ($LASTEXITCODE) { exit $LASTEXITCODE } elseif (-not $engramOk) { exit 1 }`;
+}</code></pre>
           </details>
           <div class="tags"><span class="tag dev">Dev</span></div>
-          <dl class="sheet"><dt>Plateforme</dt><dd>Windows</dd><dt>Pile</dt><dd>Node.js · Electron · xterm.js · node-pty</dd><dt>Format</dt><dd>Projet perso</dd><dt>Statut</dt><dd>v0.1.6 · publiée</dd></dl>
+          <dl class="sheet"><dt>Plateforme</dt><dd>Windows</dd><dt>Pile</dt><dd>Node.js · Electron · xterm.js · node-pty · CodeMirror</dd><dt>Format</dt><dd>Projet perso</dd><dt>Statut</dt><dd>v0.9.0 · publiée</dd></dl>
           <a class="play" href="https://github.com/TIMOYOOO/engram-releases/releases/latest" target="_blank" rel="noopener">Télécharger Engram (GitHub Releases) ↗</a>
         </div>
       </div></article>
@@ -674,15 +686,16 @@ const timer = setTimeout(() => !client.authed && ws.close(4401, 'hello expected'
         <div class="card-body">
           <div class="card-top"><span class="mono"><span class="acc">OUT-02</span> / Open source</span><span class="stamp">Contribution</span></div>
           <h3 class="scr">Capri</h3>
-          <p>Un compagnon de bureau qui suit les agents Claude Code : actions en cours, demandes de permission, fin de tâche. C'est un projet open source de <a href="https://github.com/mochiiwuff/capri-desktop" target="_blank" rel="noopener">mochiiwuff</a> (licence MIT), que je fais évoluer sur mon fork.</p>
+          <p>Un compagnon de bureau qui suit les agents Claude Code : actions en cours, demandes de permission, fin de tâche. C'est un projet open source de <a href="https://github.com/mochiiwuff/capri-desktop" target="_blank" rel="noopener">mochiiwuff</a> (licence MIT), que je fais évoluer dans ma propre version.</p>
           <div class="feat"><span class="mono acc">Mes ajouts</span>
             <ul class="adds">
               <li><b>Capri sur le téléphone</b> : une app Android native où elle apparaît, animée, par-dessus les autres applis ; des notifications à deux niveaux d'urgence ; des mises à jour envoyées depuis le PC et vérifiées par empreinte SHA-256.</li>
               <li><b>Liaison privée</b> : le serveur du PC n'est joignable que par un réseau privé chiffré, et le téléphone se lie par QR code et jeton.</li>
               <li><b>Mémoire durable</b> : la conversation, les faits appris (gardés après confirmation) et la lecture seule de ma base de connaissances. Les modèles cloud n'y ont pas accès.</li>
               <li><b>Agenda piloté par le chat</b>, en cinq langues, avec une confirmation avant chaque changement.</li>
-              <li><b>Deux moteurs de conversation</b> : Ollama en local, Claude Haiku en option.</li>
-              <li>Menu principal, mode son minimal, reprise après la veille du PC, glisser Capri d'un écran à l'autre.</li>
+              <li><b>Moteurs de conversation</b> : Ollama en local, ou les modèles d'un abonnement Claude Code sans clé d'API ; un modèle de vision local pour qu'elle regarde l'écran.</li>
+              <li><b>Elle sent le PC</b> : batterie, réseau coupé, clé USB ou manette branchée, jeu lancé, processeur saturé, sans jamais lire le contenu des disques.</li>
+              <li>Deux looks au choix, réglages dans un panneau à son style, menu principal, mode son minimal, reprise après la veille du PC, glisser Capri d'un écran à l'autre.</li>
             </ul>
           </div>
           <details class="code" id="code-capri">
